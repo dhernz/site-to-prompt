@@ -25,6 +25,12 @@ The full flow: **URL → analyze → reconstruction prompt → (optional) build 
 3. **Fetch the linked CSS and JS bundles** with the same `curl`. Save them locally so subagents/greps can read them.
 4. **Map the body structure** — grep for `<section>`, `<header>`, `<footer>`, class names, and `data-*` attributes (these usually drive the animations).
 5. **Screenshots (confirmation):** use a headless browser (e.g. the `browse` skill) to capture top / 25% / 50% / 75% / bottom. NOTE: headless WebGL often fails to initialize, and scroll-driven content frequently sits at `opacity:0` / off-canvas until JS animates it — so screenshots of heavily animated sites may render blank. When that happens, **trust the source code**, not the blank screenshot, and say so.
+6. **Measure the rendered DOM (do this even when screenshots are blank).** WebGL failing does NOT stop the DOM from laying out — `getComputedStyle` and `getBoundingClientRect` still return real values. Source CSS gives you animation *formulas* but NOT the rendered *proportions*, and those proportions decide how an animation feels. For every key element capture:
+   - Computed `font-size`, `color`, `font-family`, `font-variation-settings` — the resolved px/hex, not the `var()` token.
+   - `getBoundingClientRect()` height **as a fraction of the viewport** (`innerHeight`). A section's height drives how fast scroll-progress changes: a tall section makes a scroll-linked transform crawl; a short one makes it pop. This is the single most common reconstruction miss.
+   - `position` (static / relative / absolute / sticky / fixed) and stacking.
+   - **Sample scroll-linked transforms at 2-3 scroll offsets** to record the parallax rate (how many px an element drifts per px of scroll). Caveat: sites using smooth-scroll libraries (Lenis, Locomotive) ignore programmatic `window.scrollTo`, so their scroll-driven values won't update under a scripted scroll — note the rate from the source formula + section height instead.
+   Put these measured numbers in the prompt (e.g. "manifesto section height ≈ 55vh; body 19px mono, #858585") — they are as important as the colors and copy.
 
 For large files, fan out: dispatch parallel subagents to read the local CSS, HTML, and JS — one each — and report exact values. Keeps your context clean and is faster.
 
@@ -175,6 +181,7 @@ Every animation → delay + duration + easing + initial state + final state.
 Every image → full URL from the actual site. Never a placeholder or invented path.
 Every copy → exact words from the site. Never paraphrase or rewrite.
 Every responsive rule → explicit per breakpoint, not "scales down".
+Every section → its rendered height as a fraction of the viewport. A scroll-linked animation's *feel* depends on it: copy the formula AND the proportion, or the motion comes out wrong.
 
 **NEVER FABRICATE.** If you cannot confirm a value from source code, network requests, or page source — write `[inspect: <what to look for>]`. Do not guess, invent, or estimate. This applies to:
 - Award/date data that isn't in the source
@@ -216,4 +223,7 @@ It is better to have 10 `[inspect: ...]` markers than one fabricated value. The 
 - Using `WebFetch` (which summarizes) instead of `curl` for raw source
 - Stopping at the main JS bundle when the real animation logic is in lazy-loaded chunks
 - Trusting a blank headless screenshot over the source on a WebGL/scroll-driven site
+- Copying an animation formula but not the section's rendered height — a too-tall section makes a scroll-linked transform crawl and look frozen (the #1 "the animation doesn't work" cause)
+- Leaving colors/font-sizes as `var()` tokens instead of resolving the computed px/hex from the live DOM
 - In the Build Phase: substituting placeholder assets, or silently approximating instead of flagging it
+- In the Build Phase: skipping the side-by-side check of computed values (height/font/color) against the original before declaring it done
