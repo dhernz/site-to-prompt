@@ -29,8 +29,11 @@ The full flow: **URL → analyze → reconstruction prompt → (optional) build 
    - Computed `font-size`, `color`, `font-family`, `font-variation-settings` — the resolved px/hex, not the `var()` token.
    - `getBoundingClientRect()` height **as a fraction of the viewport** (`innerHeight`). A section's height drives how fast scroll-progress changes: a tall section makes a scroll-linked transform crawl; a short one makes it pop. This is the single most common reconstruction miss.
    - `position` (static / relative / absolute / sticky / fixed) and stacking.
+   - **Grid/flex placement of every positioned child.** Editorial layouts hand-place each item with explicit `grid-row` / `grid-column` (and `margin-top` nudges) — a scattered look that an auto-flow `span N` will NEVER reproduce, and that is invisible in a quick CSS skim. Dump `gridRowStart/End`, `gridColumnStart/End`, `marginTop`, `alignSelf` for each child of any grid. This is more reliable than reading the source CSS, because source rules carry responsive duplicates that flatten ambiguously when grepped — the computed value at a known viewport is unambiguous.
+   - **Inner-element structure and animation.** A word like `<span><span>Word</span></span>` often wraps an inner element that masks/reveals/transforms independently. Check the inner element's computed `transform`/`transition`/`overflow`, not just the outer.
    - **Sample scroll-linked transforms at 2-3 scroll offsets** to record the parallax rate (how many px an element drifts per px of scroll). Caveat: sites using smooth-scroll libraries (Lenis, Locomotive) ignore programmatic `window.scrollTo`, so their scroll-driven values won't update under a scripted scroll — note the rate from the source formula + section height instead.
-   Put these measured numbers in the prompt (e.g. "manifesto section height ≈ 55vh; body 19px mono, #858585") — they are as important as the colors and copy.
+
+   Do this for **every section, top to bottom** — not just the one you happen to be debugging. A scripted dump (loop over sections → JSON of per-child computed layout) is the reliable way; eyeballing one section at a time guarantees you miss the others. Put these measured numbers in the prompt (e.g. "manifesto title: span1 row1/col1-13, span2 row2/col4-8 …; section height ≈ 55vh; body 19px mono #858585").
 
 For large files, fan out: dispatch parallel subagents to read the local CSS, HTML, and JS — one each — and report exact values. Keeps your context clean and is faster.
 
@@ -225,5 +228,8 @@ It is better to have 10 `[inspect: ...]` markers than one fabricated value. The 
 - Trusting a blank headless screenshot over the source on a WebGL/scroll-driven site
 - Copying an animation formula but not the section's rendered height — a too-tall section makes a scroll-linked transform crawl and look frozen (the #1 "the animation doesn't work" cause)
 - Leaving colors/font-sizes as `var()` tokens instead of resolving the computed px/hex from the live DOM
+- Reproducing a hand-placed editorial grid (explicit per-item `grid-row`/`grid-column`) as generic auto-flow `span N` — the scattered positions never line up
+- Treating a nested `<span><span>` as decorative when the inner element masks or animates independently
+- Debugging one section at a time and shipping, instead of dumping every section's computed layout up front and fixing them all in one pass
 - In the Build Phase: substituting placeholder assets, or silently approximating instead of flagging it
 - In the Build Phase: skipping the side-by-side check of computed values (height/font/color) against the original before declaring it done
