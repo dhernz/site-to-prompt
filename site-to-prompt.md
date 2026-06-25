@@ -231,5 +231,6 @@ It is better to have 10 `[inspect: ...]` markers than one fabricated value. The 
 - Reproducing a hand-placed editorial grid (explicit per-item `grid-row`/`grid-column`) as generic auto-flow `span N` — the scattered positions never line up
 - Treating a nested `<span><span>` as decorative when the inner element masks or animates independently
 - Debugging one section at a time and shipping, instead of dumping every section's computed layout up front and fixing them all in one pass
+- Giant display type that overflows its (often short) section bleeding into and overlapping adjacent sections. The original may use `overflow:visible` and rely on background/colour to mask the bleed (e.g. black letters over a dark neighbour); if your neighbour can't mask it, clip the section (`overflow:hidden`) — the in-section parallax still works. Always check title height vs section height (a title taller than its section WILL overflow).
 - In the Build Phase: substituting placeholder assets, or silently approximating instead of flagging it
 - In the Build Phase: skipping the side-by-side check of computed values (height/font/color) against the original before declaring it done
