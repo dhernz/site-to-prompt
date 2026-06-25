@@ -16,14 +16,32 @@ Give an agent a URL. It visits the site, analyzes everything, and outputs a stru
 
 The output prompt is detailed enough that a second agent can build the site in React/Tailwind or plain HTML/CSS without ever visiting the original.
 
-## Skill file
+## Installation
 
-[`site-to-prompt.md`](./site-to-prompt.md) — drop this into your Claude Code skills directory or any agent runtime that supports skill files.
+Claude Code discovers each skill as a directory containing a `SKILL.md` file. Copy [`site-to-prompt.md`](./site-to-prompt.md) into a skill directory and rename it to `SKILL.md`.
+
+**Personal install** (available in every project on your machine):
+
+```bash
+mkdir -p ~/.claude/skills/site-to-prompt
+cp site-to-prompt.md ~/.claude/skills/site-to-prompt/SKILL.md
+```
+
+**Project install** (available only in the current repo):
+
+```bash
+mkdir -p .claude/skills/site-to-prompt
+cp site-to-prompt.md .claude/skills/site-to-prompt/SKILL.md
+```
+
+Restart Claude Code (or start a new session) so it picks up the skill. It registers as `/site-to-prompt` from the `name:` field in the frontmatter.
+
+> For other agent runtimes that support skill files, drop `site-to-prompt.md` wherever that runtime loads skills from.
 
 ## How to use
 
-1. Copy `site-to-prompt.md` into your skills directory
-2. Give your agent a URL and tell it to use the `site-to-prompt` skill
+1. Install the skill (see above)
+2. Run `/site-to-prompt <url>`, or give your agent a URL and tell it to use the `site-to-prompt` skill
 3. The agent outputs a reconstruction prompt
 4. Pass that prompt to a second agent to build the site
 
