@@ -1,0 +1,9 @@
+# OS / editor cruft
+.DS_Store
+
+# Local tooling / agent state
+.gstack/
+.claude/settings.local.json
+
+# Node
+node_modules/

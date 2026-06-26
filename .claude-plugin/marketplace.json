@@ -1,0 +1,20 @@
+{
+  "name": "site-to-prompt-marketplace",
+  "description": "Marketplace for the site-to-prompt skill",
+  "owner": {
+    "name": "Doris Hernandez",
+    "email": "d.hernz@gmail.com"
+  },
+  "plugins": [
+    {
+      "name": "site-to-prompt",
+      "description": "Reverse-engineer a live animated website into a detailed reconstruction prompt, then optionally rebuild the site from it.",
+      "version": "1.0.0",
+      "source": "./",
+      "author": {
+        "name": "Doris Hernandez",
+        "email": "d.hernz@gmail.com"
+      }
+    }
+  ]
+}

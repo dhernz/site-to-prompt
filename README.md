@@ -30,25 +30,28 @@ That means **the more animations the page has, the more tokens it takes to run t
 
 ## Installation
 
-Claude Code discovers each skill as a directory containing a `SKILL.md` file. Copy [`site-to-prompt.md`](./site-to-prompt.md) into a skill directory and rename it to `SKILL.md`.
+This repo is a Claude Code **plugin** that bundles the `site-to-prompt` skill. Install it from the marketplace:
 
-**Personal install** (available in every project on your machine):
+```text
+/plugin marketplace add dhernz/site-to-prompt
+/plugin install site-to-prompt
+```
+
+Then start a new session. The skill registers as `/site-to-prompt`, and the agent auto-loads it whenever a task matches its description.
+
+### Manual install (no plugin system)
+
+The skill is a single self-contained file, so you can also just copy it in:
 
 ```bash
 mkdir -p ~/.claude/skills/site-to-prompt
-cp site-to-prompt.md ~/.claude/skills/site-to-prompt/SKILL.md
+curl -sL https://raw.githubusercontent.com/dhernz/site-to-prompt/main/skills/site-to-prompt/SKILL.md \
+  -o ~/.claude/skills/site-to-prompt/SKILL.md
 ```
 
-**Project install** (available only in the current repo):
+Use `.claude/skills/...` instead of `~/.claude/skills/...` to install into the current project only. Restart Claude Code so it picks up the skill.
 
-```bash
-mkdir -p .claude/skills/site-to-prompt
-cp site-to-prompt.md .claude/skills/site-to-prompt/SKILL.md
-```
-
-Restart Claude Code (or start a new session) so it picks up the skill. It registers as `/site-to-prompt` from the `name:` field in the frontmatter.
-
-> For other agent runtimes that support skill files, drop `site-to-prompt.md` wherever that runtime loads skills from.
+> For other agent runtimes that support skill files, drop [`skills/site-to-prompt/SKILL.md`](./skills/site-to-prompt/SKILL.md) wherever that runtime loads skills from.
 
 ## How to use
 
@@ -97,4 +100,4 @@ Every value in the output must be confirmed from page source or network requests
 
 ## Versioning
 
-Current version: **1.0.0** (see the `version` field in the skill frontmatter). Releases follow [Semantic Versioning](https://semver.org/) and are tagged in git (`v1.0.0`). See [CHANGELOG.md](./CHANGELOG.md) for what changed in each version.
+Current version: **1.0.0**. The version lives in [`package.json`](./package.json) and [`.claude-plugin/plugin.json`](./.claude-plugin/plugin.json) — one version for the whole plugin (the skill file itself carries no version). Releases follow [Semantic Versioning](https://semver.org/) and are tagged in git (`v1.0.0`). See [CHANGELOG.md](./CHANGELOG.md) for what changed in each version.

@@ -1,0 +1,20 @@
+{
+  "name": "site-to-prompt",
+  "version": "1.0.0",
+  "description": "Reverse-engineer a live animated website into a detailed reconstruction prompt, then optionally rebuild the site from it.",
+  "homepage": "https://github.com/dhernz/site-to-prompt",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dhernz/site-to-prompt.git"
+  },
+  "author": "Doris Hernandez <d.hernz@gmail.com>",
+  "license": "MIT",
+  "keywords": [
+    "claude-code",
+    "skills",
+    "reverse-engineering",
+    "web-design",
+    "animations",
+    "landing-pages"
+  ]
+}
