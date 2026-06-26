@@ -3,6 +3,17 @@
 All notable changes to the `site-to-prompt` skill are documented here.
 This project follows [Semantic Versioning](https://semver.org/): `MAJOR.MINOR.PATCH`.
 
+## [1.3.0] — 2026-06-26
+
+### Added
+- **In-run version nudge (Step 0):** the skill now carries its own version stamp and, at the
+  start of a run, quietly checks the latest published version. If the installed copy is older,
+  it adds one line to its final message — `you're on vX, latest is vY — update with …`. This
+  reaches `npx skills` and manual-copy users, who don't get the plugin SessionStart hook.
+  Silent when current/offline; never blocks the task.
+- **`bin/bump-version.sh`:** one command bumps the version across all manifests and both
+  SKILL.md stamps so they can't drift.
+
 ## [1.2.0] — 2026-06-26
 
 ### Added

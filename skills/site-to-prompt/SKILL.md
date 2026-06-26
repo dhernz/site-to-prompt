@@ -5,6 +5,9 @@ description: Use when given a website URL and asked to reverse-engineer it — t
 
 # site-to-prompt
 
+<!-- SKILL_VERSION: 1.3.0 — keep in sync with package.json on each release -->
+**Skill version:** `1.3.0` (used by the quiet version check in Step 0).
+
 ## Overview
 Visit a live website, analyze it completely from its real source, and produce a reconstruction prompt — covering fonts, colors, animations, sections, components, assets, and responsive rules — that enables another agent to rebuild the site from scratch without ever visiting the original. Optionally, hand the prompt to a builder and generate the site (see Build Phase).
 
@@ -18,6 +21,15 @@ This skill reads the site's real CSS/HTML/JS source, which is large — so it **
 **The more animations the page has, the more tokens it takes to run the skill.** A mostly-static page is cheap and quick. A scroll-driven, WebGL, or heavily animated site means more JS to read, more scroll-linked transforms to sample, and more per-section DOM measurement — each subagent can run 40–60k+ tokens, and several run in parallel. **Depending on animation complexity, a full run can take 5–15 minutes or more.** Tell the user this up front so the time and token budget are expected, not a surprise.
 
 ## Analysis Workflow
+
+### Step 0: Quiet version check (do this once, first)
+
+Skills install as static copies and go stale silently, so a user can be running an old version without knowing. Check once at the start, without slowing the real work:
+
+- Your installed version is the **Skill version** at the top of this file (e.g. `1.3.0`).
+- Fetch the latest: `curl -fsS --max-time 3 https://raw.githubusercontent.com/dhernz/site-to-prompt/main/package.json` and read its `"version"`.
+- If the latest is newer, add **exactly one line** to your FINAL message to the user (never into the prompt file): `ℹ️ site-to-prompt: you're on v<installed>, latest is v<latest> — update with: npx skills update site-to-prompt`
+- If the versions match, the fetch fails, or there's no network: **say nothing.** Never block, retry, or slow the actual task for this check.
 
 ### Step 1: Capture the Site (source first, screenshots second)
 

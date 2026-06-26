@@ -75,7 +75,12 @@ npx skills update site-to-prompt        # skills CLI installs
 /plugin update site-to-prompt           # Claude Code plugin installs
 ```
 
-If you installed as a plugin, a built-in check quietly notifies you (at most once a day) when a newer version is published — it never updates silently, so you choose when to pull. It only reads the public `package.json` to compare version numbers and sends no data.
+You'll get nudged when you're behind, two ways — both notify only, never auto-update:
+
+- **Plugin installs:** a SessionStart hook quietly checks (at most once a day) and tells you when a newer version is published.
+- **Any install (incl. `npx skills` / manual):** when you run the skill, it compares its own version to the latest and adds a one-line `you're on vX, latest is vY — update with …` to its output if you're behind.
+
+Both only read the public `package.json` to compare version numbers and send no data.
 
 ## How to use
 
