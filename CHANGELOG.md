@@ -3,6 +3,16 @@
 All notable changes to the `site-to-prompt` skill are documented here.
 This project follows [Semantic Versioning](https://semver.org/): `MAJOR.MINOR.PATCH`.
 
+## [1.2.0] — 2026-06-26
+
+### Added
+- **Update notifier:** a plugin SessionStart hook (`hooks/check-update.sh`) compares the
+  installed version against the latest on GitHub and, at most once per 24h, surfaces a
+  one-line "vX.Y.Z is available — update with …" notice. Network-failure-safe, silent when
+  already current, and it only reads the public `package.json` (sends no data). Notifier
+  only, never auto-updates — the user stays in control of when to pull. (Plugin installs
+  only; `npx skills` / manual users update via the README's Updating section.)
+
 ## [1.1.0] — 2026-06-26
 
 Multi-page scope and QA verification — the two biggest fidelity gaps from real use.

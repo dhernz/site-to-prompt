@@ -65,6 +65,18 @@ Use `.claude/skills/...` instead of `~/.claude/skills/...` to install into the c
 
 > For other agent runtimes that support skill files, drop [`skills/site-to-prompt/SKILL.md`](./skills/site-to-prompt/SKILL.md) wherever that runtime loads skills from.
 
+### Updating
+
+Skills are installed as a snapshot — they don't auto-update, so a copy installed earlier stays on its old version until you pull again. To get the latest:
+
+```bash
+npx skills update site-to-prompt        # skills CLI installs
+# or
+/plugin update site-to-prompt           # Claude Code plugin installs
+```
+
+If you installed as a plugin, a built-in check quietly notifies you (at most once a day) when a newer version is published — it never updates silently, so you choose when to pull. It only reads the public `package.json` to compare version numbers and sends no data.
+
 ## How to use
 
 1. Install the skill (see above)

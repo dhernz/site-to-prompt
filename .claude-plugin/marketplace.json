@@ -9,7 +9,7 @@
     {
       "name": "site-to-prompt",
       "description": "Convert any site into a prompt: give it a URL and it parses the site into a structured prompt another agent can rebuild from.",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "source": "./",
       "author": {
         "name": "Doris Hernandez",
