@@ -1,6 +1,6 @@
 {
   "name": "site-to-prompt",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Reverse-engineer a live animated website into a detailed reconstruction prompt, then optionally rebuild the site from it.",
   "homepage": "https://github.com/dhernz/site-to-prompt",
   "repository": {
