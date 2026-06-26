@@ -8,7 +8,7 @@
     "url": "https://github.com/dhernz/site-to-prompt.git"
   },
   "author": "Doris Hernandez <d.hernz@gmail.com>",
-  "license": "MIT",
+  "license": "GPL-3.0-or-later",
   "keywords": [
     "claude-code",
     "skills",

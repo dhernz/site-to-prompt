@@ -8,7 +8,7 @@
   },
   "homepage": "https://github.com/dhernz/site-to-prompt",
   "repository": "https://github.com/dhernz/site-to-prompt",
-  "license": "MIT",
+  "license": "GPL-3.0-or-later",
   "keywords": [
     "skills",
     "reverse-engineering",

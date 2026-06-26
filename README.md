@@ -100,4 +100,8 @@ Every value in the output must be confirmed from page source or network requests
 
 ## Versioning
 
-Current version: **1.0.0**. The version lives in [`package.json`](./package.json) and [`.claude-plugin/plugin.json`](./.claude-plugin/plugin.json) — one version for the whole plugin (the skill file itself carries no version). Releases follow [Semantic Versioning](https://semver.org/) and are tagged in git (`v1.0.0`). See [CHANGELOG.md](./CHANGELOG.md) for what changed in each version.
+Current version: **1.1.0**. The version lives in [`package.json`](./package.json) and [`.claude-plugin/plugin.json`](./.claude-plugin/plugin.json) — one version for the whole plugin (the skill file itself carries no version). Releases follow [Semantic Versioning](https://semver.org/), are tagged in git (`vX.Y.Z`), and are published on the [Releases page](https://github.com/dhernz/site-to-prompt/releases). See [CHANGELOG.md](./CHANGELOG.md) for what changed in each version.
+
+## License
+
+[GPL-3.0-or-later](./LICENSE). You may use, modify, and redistribute this skill under the terms of the GNU General Public License v3.0 or later.
