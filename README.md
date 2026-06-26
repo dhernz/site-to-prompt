@@ -1,6 +1,6 @@
 # site-to-prompt
 
-A skill for AI agents that analyzes a live animated website and generates a detailed reconstruction prompt — enabling another agent to rebuild the site from scratch.
+A skill for AI agents that analyzes a live animated website and generates a detailed reconstruction prompt — enabling another agent to rebuild the site from scratch. Optionally, the same agent can go one step further and build the site for you directly from that prompt.
 
 ## Why use it
 
@@ -54,8 +54,12 @@ Restart Claude Code (or start a new session) so it picks up the skill. It regist
 
 1. Install the skill (see above)
 2. Run `/site-to-prompt <url>`, or give your agent a URL and tell it to use the `site-to-prompt` skill
-3. The agent outputs a reconstruction prompt
-4. Pass that prompt to a second agent to build the site
+3. The agent saves the reconstruction prompt as a Markdown (`.md`) file and tells you the path
+
+Then either:
+
+- **Just want the prompt?** You're done — the `.md` file is yours to read, save, or feed to any agent later.
+- **Want the site built?** Just ask the same agent to build it from that `.md` file (optional build phase). It generates the working site — section by section, with the documented animations — and verifies it in a browser. You can also hand the `.md` to a separate agent if you prefer.
 
 ## Tested on
 

@@ -126,6 +126,8 @@ For every repeating UI element, capture:
 
 ## Output Format
 
+**Write the reconstruction prompt to a Markdown file** (e.g. `<site-name>-reconstruction-prompt.md`) so it's a durable artifact the user can read, save, or hand to any agent — including this same one for the optional Build Phase. Tell the user the file path when done.
+
 Generate the reconstruction prompt using this exact structure. Every field must have a real value — no placeholders, no vague descriptions.
 
 ```
