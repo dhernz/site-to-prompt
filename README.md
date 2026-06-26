@@ -30,16 +30,26 @@ That means **the more animations the page has, the more tokens it takes to run t
 
 ## Installation
 
-This repo is a Claude Code **plugin** that bundles the `site-to-prompt` skill. Install it from the marketplace:
+### Quickest — the `skills` CLI (one command)
+
+```bash
+npx skills add dhernz/site-to-prompt
+```
+
+One terminal command, no restart needed, and it works across Claude Code, Codex, and Cursor. The skill registers as `/site-to-prompt`.
+
+### As a Claude Code plugin
+
+This repo is also a Claude Code **plugin marketplace**, so you can install it natively (gives versioning + auto-update):
 
 ```text
 /plugin marketplace add dhernz/site-to-prompt
 /plugin install site-to-prompt
 ```
 
-Then start a new session. The skill registers as `/site-to-prompt`, and the agent auto-loads it whenever a task matches its description.
+Then start a new session. The agent auto-loads the skill whenever a task matches its description.
 
-### Manual install (no plugin system)
+### Manual install (copy the file)
 
 The skill is a single self-contained file, so you can also just copy it in:
 
