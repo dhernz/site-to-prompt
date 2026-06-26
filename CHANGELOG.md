@@ -3,6 +3,13 @@
 All notable changes to the `site-to-prompt` skill are documented here.
 This project follows [Semantic Versioning](https://semver.org/): `MAJOR.MINOR.PATCH`.
 
+## [1.3.1] — 2026-06-26
+
+### Changed
+- Simplified the up-front heads-up to the user: it gives the time estimate and outlines the
+  plan — "first I'll analyze the site, then ask which pages or sections you want parsed, then
+  create the prompt."
+
 ## [1.3.0] — 2026-06-26
 
 ### Added

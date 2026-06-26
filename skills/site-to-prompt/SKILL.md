@@ -5,8 +5,8 @@ description: Use when given a website URL and asked to reverse-engineer it — t
 
 # site-to-prompt
 
-<!-- SKILL_VERSION: 1.3.0 — keep in sync with package.json on each release -->
-**Skill version:** `1.3.0` (used by the quiet version check in Step 0).
+<!-- SKILL_VERSION: 1.3.1 — keep in sync with package.json on each release -->
+**Skill version:** `1.3.1` (used by the quiet version check in Step 0).
 
 ## Overview
 Visit a live website, analyze it completely from its real source, and produce a reconstruction prompt — covering fonts, colors, animations, sections, components, assets, and responsive rules — that enables another agent to rebuild the site from scratch without ever visiting the original. Optionally, hand the prompt to a builder and generate the site (see Build Phase).
@@ -18,7 +18,9 @@ A site is more than its home page, and a parse is worthless if the build doesn't
 ### How this runs (and what it costs)
 This skill reads the site's real CSS/HTML/JS source, which is large — so it **dispatches parallel subagents** to do the heavy reading (one per bundle: CSS, HTML, JS, plus the live-DOM measurement dump). Each subagent reads in its own context and reports back only the exact values, keeping the main context clean.
 
-**The more animations the page has, the more tokens it takes to run the skill.** A mostly-static page is cheap and quick. A scroll-driven, WebGL, or heavily animated site means more JS to read, more scroll-linked transforms to sample, and more per-section DOM measurement — each subagent can run 40–60k+ tokens, and several run in parallel. **Depending on animation complexity, a full run can take 5–15 minutes or more.** Tell the user this up front so the time and token budget are expected, not a surprise.
+The more animated the page, the more work it is — more JS to read, more scroll-linked transforms to sample, more per-section DOM measurement, with several subagents running in parallel. **Depending on animation complexity, a full run can take 5–15 minutes or more.**
+
+**What to tell the user up front (keep it short):** give the time estimate and outline the plan in plain terms — *"First I'll analyze the site, then ask which pages or sections you want me to parse, then create the prompt."*
 
 ## Analysis Workflow
 
@@ -63,7 +65,7 @@ For large files, fan out: dispatch parallel subagents to read the local CSS, HTM
 1. **Enumerate the pages.** From the entry HTML you already captured, list every internal link (nav, footer, in-body). Also try `curl -sL "<origin>/sitemap.xml"`. Produce a concrete list, e.g. `/` (home), `/projects`, `/about`, `/playground`, `/contact`.
 2. **Ask the user to pick scope** before going further:
    - **Just this page** (the one in the URL) — fastest, cheapest.
-   - **The whole site** — every page found above. Warn that cost/time multiplies per page (each page is its own full analysis: 5–15 min and 40–60k+ tokens each on animated sites).
+   - **The whole site** — every page found above. Warn that time multiplies per page (each page is its own full analysis — 5–15 min each on animated sites).
    - **Specific page(s) or one section** — let them name what they want (e.g. "just the Projects page" or "only the hero").
 3. **Record the chosen scope** and run the rest of the workflow (Steps 2–6) **per page in scope.** Capture each page's own HTML/CSS/JS (Step 1) — pages often share a bundle but have different DOM, sections, and per-page chunks.
 4. **One prompt file per page** (e.g. `<site>-home-reconstruction-prompt.md`, `<site>-projects-…`), or a single file with a clear `# PAGE: /projects` heading per page. Make multi-page structure explicit so the builder knows it's building more than one page.
