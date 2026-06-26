@@ -22,6 +22,12 @@ Give an agent a URL. It visits the site, analyzes everything, and outputs a stru
 
 The output prompt is detailed enough that a second agent can build the site in React/Tailwind or plain HTML/CSS without ever visiting the original.
 
+## How it works (and what it costs)
+
+To stay faithful, the skill reads the site's real CSS/HTML/JS source instead of guessing from a screenshot. Those bundles are large, so it **dispatches parallel subagents** — one to read the CSS, one the HTML, one the JS, plus a live-DOM measurement pass — each working in its own context and reporting back only the exact values.
+
+That means **the more animations the page has, the more tokens it takes to run the skill.** A mostly-static page is cheap and quick. A scroll-driven, WebGL, or heavily animated site has far more to read and measure — individual subagents can run 40–60k+ tokens, and several run at once. **Depending on animation complexity, a full run can take 5–15 minutes or more.**
+
 ## Installation
 
 Claude Code discovers each skill as a directory containing a `SKILL.md` file. Copy [`site-to-prompt.md`](./site-to-prompt.md) into a skill directory and rename it to `SKILL.md`.

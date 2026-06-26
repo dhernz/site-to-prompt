@@ -10,6 +10,11 @@ Visit a live website, analyze it completely from its real source, and produce a 
 
 The full flow: **URL → analyze → reconstruction prompt → (optional) build the site.**
 
+### How this runs (and what it costs)
+This skill reads the site's real CSS/HTML/JS source, which is large — so it **dispatches parallel subagents** to do the heavy reading (one per bundle: CSS, HTML, JS, plus the live-DOM measurement dump). Each subagent reads in its own context and reports back only the exact values, keeping the main context clean.
+
+**The more animations the page has, the more tokens it takes to run the skill.** A mostly-static page is cheap and quick. A scroll-driven, WebGL, or heavily animated site means more JS to read, more scroll-linked transforms to sample, and more per-section DOM measurement — each subagent can run 40–60k+ tokens, and several run in parallel. **Depending on animation complexity, a full run can take 5–15 minutes or more.** Tell the user this up front so the time and token budget are expected, not a surprise.
+
 ## Analysis Workflow
 
 ### Step 1: Capture the Site (source first, screenshots second)
