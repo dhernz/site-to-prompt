@@ -1,6 +1,6 @@
 {
   "name": "site-to-prompt",
-  "description": "Reverse-engineer a live animated website into a detailed reconstruction prompt, then optionally rebuild the site from it.",
+  "description": "Convert any site into a prompt: give it a URL and it parses the site into a structured prompt another agent can rebuild from.",
   "version": "1.1.0",
   "author": {
     "name": "Doris Hernandez",

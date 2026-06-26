@@ -1,6 +1,8 @@
 # site-to-prompt
 
-A skill for AI agents that analyzes a live animated website and generates a detailed reconstruction prompt — enabling another agent to rebuild the site from scratch. Optionally, the same agent can go one step further and build the site for you directly from that prompt.
+> **Convert any site into a prompt.**
+
+Like a site and want your agent to mimic a specific section or animation? Give this skill a URL — it parses the whole site into a structured prompt another agent can rebuild from. Optionally, the same agent can go one step further and build the site for you directly from that prompt.
 
 ## Why use it
 
