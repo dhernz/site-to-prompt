@@ -94,3 +94,7 @@ RESPONSIVE BREAKPOINTS
 ## Fidelity standard
 
 Every value in the output must be confirmed from page source or network requests — never guessed. Unverifiable values are marked `[inspect: what to look for]` so the next agent knows exactly what to check.
+
+## Versioning
+
+Current version: **1.0.0** (see the `version` field in the skill frontmatter). Releases follow [Semantic Versioning](https://semver.org/) and are tagged in git (`v1.0.0`). See [CHANGELOG.md](./CHANGELOG.md) for what changed in each version.

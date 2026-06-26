@@ -1,5 +1,6 @@
 ---
 name: site-to-prompt
+version: 1.0.0
 description: Use when given a website URL and asked to reverse-engineer it — to produce a detailed reconstruction prompt and/or rebuild the site in HTML/CSS or React/Tailwind. Covers animated, scroll-driven, and WebGL sites.
 ---
 
