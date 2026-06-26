@@ -2,6 +2,12 @@
 
 A skill for AI agents that analyzes a live animated website and generates a detailed reconstruction prompt — enabling another agent to rebuild the site from scratch.
 
+## Why use it
+
+You found a landing page you love and want your agent to mimic some of its sections. Or you saw one specific animation on a site and want to implement that exact effect in your own project.
+
+site-to-prompt parses the whole page — every section, layout, and animation (timing, easing, initial → final state) — and writes it all up as a structured prompt. Hand that prompt to your own agent, and it generates a page that captures what you liked.
+
 ## What it does
 
 Give an agent a URL. It visits the site, analyzes everything, and outputs a structured prompt covering:
