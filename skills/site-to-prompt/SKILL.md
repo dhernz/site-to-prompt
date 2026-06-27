@@ -5,8 +5,8 @@ description: Use when given a website URL and asked to reverse-engineer it — t
 
 # site-to-prompt
 
-<!-- SKILL_VERSION: 1.3.1 — keep in sync with package.json on each release -->
-**Skill version:** `1.3.1` (used by the quiet version check in Step 0).
+<!-- SKILL_VERSION: 1.4.0 — keep in sync with package.json on each release -->
+**Skill version:** `1.4.0` (used by the quiet version check in Step 0).
 
 ## Overview
 Visit a live website, analyze it completely from its real source, and produce a reconstruction prompt — covering fonts, colors, animations, sections, components, assets, and responsive rules — that enables another agent to rebuild the site from scratch without ever visiting the original. Optionally, hand the prompt to a builder and generate the site (see Build Phase).
@@ -14,6 +14,11 @@ Visit a live website, analyze it completely from its real source, and produce a 
 The full flow: **URL → confirm scope → analyze → reconstruction prompt → (optional) build → QA verify.**
 
 A site is more than its home page, and a parse is worthless if the build doesn't match it. So two gates are non-negotiable: **confirm scope before analyzing** (don't silently parse only the home page — Step 1.5), and **run a QA pass that compares the result against the original** (don't silently ship something incomplete — the prompt is QA'd in Step 6, the built site in the Build Phase QA step).
+
+### Motion is content, not decoration (read this first)
+The single biggest failure of this skill is treating a site's signature animation as decoration — capturing the words and a static asset, then shipping a still image with text on top. For many sites the **motion *is* the product** ("look how this is built"): a scroll-driven terrain reveal, a pinned canvas, a parallaxing panel. Get the copy perfect and flatten the motion and you have *same words, wrong soul* — a failed reconstruction, no matter how accurate the text.
+
+So, throughout: **identify each section's signature motion, treat it as the primary deliverable, capture its behavior first, build it first, and verify it by interacting (scrolling) — never by a static screenshot.** A static screenshot of a flattened animation looks perfect, which is exactly why this slips through. Concretely this means classifying every section (Step 3), motion-first capture (Step 4), and QA that scrolls (Step 6 + Build Phase QA).
 
 ### How this runs (and what it costs)
 This skill reads the site's real CSS/HTML/JS source, which is large — so it **dispatches parallel subagents** to do the heavy reading (one per bundle: CSS, HTML, JS, plus the live-DOM measurement dump). Each subagent reads in its own context and reports back only the exact values, keeping the main context clean.
@@ -96,6 +101,12 @@ List every visual section in the order it appears:
 
 Name each section by what you observe, not by generic labels.
 
+**Then classify every section: motion-critical or content-critical.** Apply this forcing question to each — *"If I removed the animation, does this section still deliver its point?"*
+- **No → motion-critical.** The motion is the content (e.g. a hero whose scroll-reveal *is* the pitch). These sections are the priority: their behavior must be captured, built, and QA'd as the primary deliverable.
+- **Yes → content-critical.** The copy/layout carries it; animation is polish.
+
+Tag each section in your notes and in the prompt. Motion-critical sections get the motion-first treatment in Steps 4, 6, and the Build Phase. Getting this classification wrong is how you ship a static skin of an animated site.
+
 ### Step 3.5: Read JS Source for Animations
 You cannot scroll or interact with the page — so you cannot observe scroll-triggered animations visually. Instead:
 - Fetch the main JS bundle or linked script files
@@ -141,6 +152,14 @@ For EVERY section, capture all of the following:
 - Trigger: page load, scroll into viewport, scroll position, hover
 - For scroll-driven: scroll offset formula (e.g. `scrollY * 0.3`)
 
+**Signature motion (REQUIRED for motion-critical sections — capture the behavior, not just the asset)**
+For any section tagged motion-critical in Step 3, the static asset (an image/`.webp`/canvas frame) is NOT the deliverable — the behavior is. Capture, in concrete terms a builder can reproduce:
+- **What moves and how:** pin/sticky (and for how long — the scroll runway), parallax rate, reveal/mask, scale, the canvas/WebGL render itself.
+- **Container vs full-bleed:** is the animated element a *framed panel* you scroll *into* (e.g. a bordered browser-window mock with its own header/chrome), or full-bleed? Capture the frame, its inset, and what sits on solid background around it.
+- **Overlays and cues:** browser-window mock, captions, a "Keep scrolling ↓" prompt, progress indicators — these are part of the motion's story.
+- **The choreography in order:** what state the section is in at scroll 0%, 50%, 100% — described as a sequence, so the build reproduces the *reveal*, not a single frozen frame.
+- If you genuinely cannot extract the behavior, write `[inspect: signature scroll behavior of <section> — pin/parallax/reveal, frame, overlay, cue]` and flag it as the section's most important open item. Never substitute the static asset and move on.
+
 **Responsive overrides**
 - Explicit values at mobile (< 640px), tablet (640–1024px), desktop (> 1024px)
 - Font size changes, layout direction changes, element visibility changes
@@ -158,6 +177,7 @@ Before declaring the prompt done, **dispatch a QA subagent** (fresh context, so 
 
 - **Scope match:** every page the user asked for (Step 1.5) has its own complete section in the prompt. No page silently dropped.
 - **Section completeness:** every section found when mapping the DOM (Step 3) appears in the prompt, top to bottom, none skipped.
+- **Motion fidelity (highest priority):** every section is tagged motion-critical / content-critical, and **every motion-critical section leads with a real `Signature motion:` spec** — the choreography (pin/parallax/reveal, frame vs full-bleed, overlays, cues, 0/50/100% states), not just a static asset URL. If a motion-critical section is described as a static image with text on top, that is a FAIL — the prompt would rebuild the wrong soul. This is the #1 thing to catch.
 - **No fabrication / no vagueness:** every color is a hex, every font-size a real value, every image a real URL, every animation has delay+duration+easing+states. Flag any "dark background"-style hand-waving.
 - **`[inspect:]` accounting:** list every unresolved marker so the gap count is explicit, not buried.
 - **The hard stuff is actually captured:** WebGL/canvas effects, scroll formulas, smooth-scroll, and section heights — the things most likely to be skipped — each have real values or an honest `[inspect:]`.
@@ -187,14 +207,17 @@ SECTION ORDER
 [Section2Name]
 [...]
 
-1. [SECTION NAME]
+1. [SECTION NAME]  [motion-critical | content-critical]
 [One paragraph describing the full layout and purpose of the section]
 
+# For a MOTION-CRITICAL section, the FIRST subsection must be the behavior — it is the spec,
+# not the copy. Lead with it so a builder implements the motion first.
+Signature motion: [the choreography — what is pinned/parallaxed/revealed, scroll runway, frame vs full-bleed, overlays/cues, and the state at 0% / 50% / 100% scroll]
 [Subsection label]: [Complete spec — layout, exact copy, hex colors, font details, exact URLs, animation timing]
 [Subsection label]: [Complete spec]
 [...]
 
-2. [SECTION NAME]
+2. [SECTION NAME]  [motion-critical | content-critical]
 [...]
 
 REUSABLE COMPONENTS
@@ -217,10 +240,12 @@ After the reconstruction prompt is written, you can build the site from it. Do t
 1. **Confirm target stack and scope.** Default to a single static `index.html` + CSS + a JS module unless the user specifies React/Tailwind/Next. Ask once if unclear; otherwise pick the stack named in the prompt's first line. **Build every page in the chosen scope** (Step 1.5) — if the prompt covers `/`, `/projects`, `/about`, build all of them and wire up the nav between them, not just the home page.
 2. **Resolve `[inspect: …]` markers before building.** Each marker is a known gap. For each one, either fetch the missing source (re-run Step 1/3.5 on the specific file), or make an explicit, labeled approximation — never silently invent.
 3. **Build section by section, in document order**, following the prompt as the spec. Reuse the exact tokens (colors, fonts, spacing vars), exact copy, and the documented animation values. Recreate the CSS-variable + scroll-progress driver pattern rather than hardcoding transforms.
+   - **Motion-first for motion-critical sections:** build the `Signature motion` *behavior first* (the pin/parallax/reveal, the frame, the overlay, the scroll cue), confirm it actually moves, and only then skin the copy onto it. **Never drop in the static asset and call the section done** — a still image with text on top is a failed reproduction of a motion-critical section, not a first draft.
 4. **Assets:** reference the original CDN/media URLs from the prompt directly, OR download them locally if the user wants a self-contained build. Don't substitute stock placeholders.
 5. **Reproduce, don't import blindly.** If the original uses GSAP/Lenis/Three.js, you may use the same libs, or reimplement the documented behavior with `IntersectionObserver` + `requestAnimationFrame` + CSS. Match the *behavior and numbers* in the prompt.
 6. **Verify in a real browser.** Use the `browse` skill (or run a local server) to load the built site, screenshot it, check the console for errors. Fix obvious breakage before the QA gate.
 7. **QA gate — dispatch a QA agent to compare BUILD vs ORIGINAL vs PROMPT (do not skip).** This is the step that catches "I spent 30 minutes and the build came out blank." Spin up a dedicated QA subagent that:
+   - **Verifies motion by SCROLLING, not by a single screenshot (highest priority).** A static screenshot of a flattened animation looks perfect — that is exactly how a static skin of an animated site passes QA. For every motion-critical section, the QA agent must drive the page: scroll through the section in the build and in the original, and compare the *behavior* — does it pin, parallax, reveal, show the frame/overlay/cue? **If the build renders the section as a static image (no motion) while the original animates, that is an automatic FAIL**, even if the still frame matches pixel-for-pixel. Same words/asset, no motion = wrong soul.
    - **Loads the built site AND the original side by side** (screenshot both at the same viewport, top→bottom, for every page in scope).
    - **Confirms every section/page from the prompt is actually present and rendered** — not just in the code, but visible. A `<canvas>` that renders blank, a section that's `opacity:0` and never animates in, a missing page → all FAIL.
    - **Checks the signature visuals specifically:** WebGL/canvas effects (e.g. a dithered/point-cloud render), hero animation, scroll behavior, fonts, colors, layout proportions. Compare the built render to the original's real appearance — if the original shows a vivid red halftone cat and the build shows a dark blank canvas, that is a FAIL to report, not "done."
@@ -269,6 +294,9 @@ It is better to have 10 `[inspect: ...]` markers than one fabricated value. The 
 
 ## Common Mistakes
 
+- **Flattening a motion-critical section into a static image with text on top** — the worst and most common failure. The site's whole pitch is the motion (a scroll-driven terrain reveal, a pinned canvas), and you ship a `.webp` wallpaper with the headline over it. Same words, wrong soul. Classify sections (Step 3), capture the behavior (Step 4), build motion-first, and let QA scroll to catch it.
+- **Passing QA on a static screenshot of an animated section** — a still frame of a flattened animation looks perfect. Motion can only be verified by scrolling/interacting; never sign off a motion-critical section from a screenshot.
+- Treating the static asset (image/canvas frame) as the deliverable instead of the behavior it's a frame of
 - Writing "dark background" instead of `#0C0C0C`
 - Writing "fades in" instead of `opacity 0→1, y: 40px→0, delay 0.3s, duration 0.7s`
 - Using placeholder image paths instead of actual CDN URLs from the site

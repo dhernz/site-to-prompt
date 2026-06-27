@@ -3,6 +3,26 @@
 All notable changes to the `site-to-prompt` skill are documented here.
 This project follows [Semantic Versioning](https://semver.org/): `MAJOR.MINOR.PATCH`.
 
+## [1.4.0] — 2026-06-27
+
+Motion-first reconstruction — stop flattening animated sites into static skins.
+
+### Added
+- **"Motion is content" principle** in the Overview: a site's signature animation is the
+  primary deliverable, not decoration.
+- **Section classification (Step 3):** every section is tagged motion-critical or
+  content-critical via the forcing question "if I removed the animation, does it still
+  deliver its point?"
+- **Motion-first capture (Step 4):** motion-critical sections require a `Signature motion`
+  spec — behavior not asset (pin/parallax/reveal, scroll runway, frame vs full-bleed,
+  overlays/cues, 0/50/100% choreography). Output Format tags each section and leads
+  motion-critical ones with the motion spec.
+- **QA verifies motion by scrolling:** Step 6 prompt-QA gains a top-priority motion-fidelity
+  check, and the Build-Phase QA gate now drives the page — a static reproduction of a
+  motion-critical section is an automatic FAIL even if the still frame matches.
+- **Named anti-patterns** in Common Mistakes: flattening an animated section into a static
+  image with text on top, and passing QA on a static screenshot of an animated section.
+
 ## [1.3.1] — 2026-06-26
 
 ### Changed
